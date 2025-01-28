@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Recherche Wikipedia et Google">
+    <meta name="keywords" content="Recherche, Wikipedia, Google, Moteur de recherche">
+    <meta name="author" content="geeko-sys">
+    <title>Relexio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            background-color: #1c1c1c;
+            color: #f1f1f1;
+        }
+
+        .section-recherche {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        .logo {
+            font-size: 4em; /* Augmenter la taille de la police */
+            margin-bottom: 10px;
+            color: #f1f1f1;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+
+        .slogan {
+            font-size: 1.2em; /* Taille de police pour le slogan */
+            color: #f1f1f1;
+            margin-bottom: 20px;
+        }
+
+        .recherche-centrale {
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+            opacity: 1;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .container-recherche {
+            display: flex;
+            width: 100%;
+            gap: 10px;
+            padding: 15px;
+            border-radius: 30px;
+            background: #2c2c2c;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .container-recherche input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            background-color: #3c3c3c;
+            color: #ffffff;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container-recherche input::placeholder {
+            color: #999999;
+        }
+
+        .container-recherche input:-webkit-autofill,
+        .container-recherche input:-webkit-autofill:hover,
+        .container-recherche input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #ffffff;
+            -webkit-box-shadow: 0 0 0px 1000px #3c3c3c inset;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        .container-recherche button {
+            padding: 15px 30px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            transition: background 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container-recherche button:hover {
+            background: #0056b3;
+        }
+
+        .container-resultats {
+            display: none;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .container-resultats.show {
+            display: flex;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cadre {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #2c2c2c;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            max-height: 70vh;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .cadre:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .resultats {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .resultat {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background: #3c3c3c;
+        }
+
+        .resultat a {
+            text-decoration: none;
+            color: #4da3ff;
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: block;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .resultat a.wikipedia-link {
+            color: #4da3ff;
+            font-weight: bold;
+        }
+
+        .resultat a:hover {
+            color: #66b3ff;
+            text-decoration: underline;
+        }
+
+        .extrait {
+            color: #e0e0e0;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sources {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #aaaaaa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .sources a {
+            font-size: 12px;
+            color: #4da3ff;
+        }
+
+        .sources a:hover {
+            color: #66b3ff;
+            text-decoration: underline;
+        }
+
+        .chargement {
+            text-align: center;
+            color: #aaaaaa;
+            padding: 20px;
+        }
+
+        /* Styles Google Custom Search améliorés */
+        .gsc-control-cse {
+            background-color: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+        }
+
+        .gsc-input-box {
+            background: #3c3c3c !important;
+            border: 1px solid #444 !important;
+            border-radius: 8px !important;
+            padding: 5px !important;
+        }
+
+        .gsib_a input {
+            color: #ffffff !important;
+            background: transparent !important;
+        }
+
+        .gsc-search-button-v2 {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+            border-radius: 8px !important;
+            padding: 10px 15px !important;
+            margin-left: 5px !important;
+        }
+
+        .gsc-search-button-v2:hover {
+            background-color: #0056b3 !important;
+            border-color: #0056b3 !important;
+        }
+
+        .gsc-webResult.gsc-result {
+            background-color: #2c2c2c !important;
+            border: 1px solid #444 !important;
+            padding: 15px !important;
+            margin-bottom: 10px !important;
+        }
+
+        .gs-title, .gs-title * {
+            color: #4da3ff !important;
+            text-decoration: none !important;
+            font-size: 18px !important;
+        }
+
+        .gs-title:hover, .gs-title *:hover {
+            text-decoration: underline !important;
+            color: #66b3ff !important;
+        }
+
+        .gs-visibleUrl {
+            color: #2ecc71 !important;
+            font-size: 14px !important;
+        }
+
+        .gs-snippet {
+            color: #e0e0e0 !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+
+        .gsc-cursor-page {
+            color: #ffffff !important;
+            background-color: #3c3c3c !important;
+            padding: 8px 12px !important;
+            border-radius: 4px !important;
+        }
+
+        .gsc-cursor-current-page {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
+
+        .gsc-completion-container {
+            background-color: #2c2c2c !important;
+            border: 1px solid #444 !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .gsc-completion-selected {
+            background-color: #3c3c3c !important;
+        }
+
+        .gsc-result-info {
+            color: #cccccc !important;
+            padding: 10px 0 !important;
+        }
+
+        .gsc-above-wrapper-area {
+            padding: 10px 0 !important;
+            border: none !important;
+        }
+
+        .gsc-results-wrapper-visible {
+            padding: 10px 0 !important;
+        }
+
+        @media (max-width: 768px) {
+            .container-resultats {
+                flex-direction: column;
+            }
+
+            .cadre {
+                max-height: none;
+            }
+
+            .recherche-centrale {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="section-recherche" id="section-recherche">
+        <div class="logo">🔍 Reflexio</div>
+        <div class="slogan">La meilleure info, c'est celle que vous cherchez</div>
+        <div class="recherche-centrale">
+            <div class="container-recherche">
+                <input type="text" id="champ-recherche" placeholder="Entrez votre recherche" aria-label="Champ de recherche">
+                <button onclick="effectuerRecherche()">Rechercher</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-resultats" id="container-resultats">
+        <div class="cadre cadre-wikipedia">
+            <h2>Résultats Wikipedia</h2>
+            <ul id="resultats" class="resultats"></ul>
+        </div>
+
+        <div class="cadre cadre-google">
+            <h2>Recherche Google</h2>
+            <div class="gcse-search"></div>
+        </div>
+    </div>
+
+    <script async src="https://cse.google.com/cse.js?cx=7294d87c03c454cb8" defer></script>
+    <script>
+        function effectuerRecherche() {
+            const sectionRecherche = document.getElementById('section-recherche');
+            const resultatsContainer = document.getElementById('container-resultats');
+
+            sectionRecherche.style.position = 'static';
+            sectionRecherche.style.transform = 'none';
+            sectionRecherche.style.minHeight = '20vh';
+            sectionRecherche.style.padding = '10px';
+
+            resultatsContainer.classList.add('show');
+            rechercherWikipedia();
+        }
+
+        async function obtenirDetailsPage(pageId) {
+            const url = `https://fr.wikipedia.org/w/api.php?action=query&format=json&prop=extracts|extlinks|info&inprop=url&pageids=${pageId}&explaintext=1&exintro=1&origin=*`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const page = data.query.pages[pageId];
+                return {
+                    extrait: page.extract || "Pas de résumé disponible.",
+                    sources: page.extlinks || [],
+                    url: page.fullurl || ""
+                };
+            } catch (error) {
+                console.error('Erreur lors de la récupération des détails:', error);
+                return {
+                    extrait: "Erreur lors de la récupération des détails.",
+                    sources: [],
+                    url: ""
+                };
+            }
+        }
+
+        async function rechercherWikipedia() {
+            const query = document.getElementById('champ-recherche').value;
+            const url = `https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const results = data.query.search;
+                const resultsContainer = document.getElementById('resultats');
+                resultsContainer.innerHTML = '';
+
+                if (results.length === 0) {
+                    resultsContainer.innerHTML = '<li class="resultat">Aucun résultat trouvé</li>';
+                    return;
+                }
+
+                for (let result of results) {
+                    const details = await obtenirDetailsPage(result.pageid);
+                    const li = document.createElement('li');
+                    li.className = 'resultat';
+                    li.innerHTML = `
+                        <a href="${details.url}" target="_blank" class="wikipedia-link">${result.title}</a>
+                        <div class="extrait">${details.extrait}</div>
+                        <div class="sources">
+                            Sources: ${details.sources.map(link => `<a href="${link['*']}" target="_blank">${link['*']}</a>`).join(', ')}
+                        </div>
+                    `;
+                    resultsContainer.appendChild(li);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la recherche:', error);
+                document.getElementById('resultats').innerHTML =
+                    '<li class="resultat">Une erreur est survenue lors de la recherche</li>';
+            }
+        }
+
+        document.getElementById('champ-recherche').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                effectuerRecherche();
+            }
+        });
+    </script>
+</body>
+
+</html>
