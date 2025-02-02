@@ -106,6 +106,19 @@
             background: #0056b3;
         }
 
+        .text-frame {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #4a4a4a;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+            color: #e0e0e0;
+            text-align: center;
+            font-size: 14px;
+            width: 100%;
+            max-width: 600px;
+        }
+
         .container-resultats {
             display: none;
             gap: 20px;
@@ -348,6 +361,10 @@
             <div class="container-recherche">
                 <input type="text" id="champ-recherche" placeholder="Entrez votre recherche" aria-label="Champ de recherche">
                 <button onclick="effectuerRecherche()">Rechercher</button>
+            </div>
+            <!-- Ajout du texte ici dans une frame arrondie avec un espace de 20 pixels -->
+            <div class="text-frame">
+                Wikipédia est une encyclopédie avec plus de 60 millions d'articles disponibles en 326 langues. Elle attire environ 500 millions de visites quotidiennes dans le monde. Malgré certaines critiques, des études estiment un taux de précision de 80 %. Son contenu est constamment amélioré et vérifié.
             </div>
         </div>
     </div>
